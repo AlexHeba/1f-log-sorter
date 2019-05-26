@@ -1,7 +1,7 @@
 package com.alex.home.kafka;
 
 import com.alex.home.LogMessage;
-import com.alex.home.ProducerFactory;
+import com.alex.home.KafkaClientUtils;
 import javafx.util.Pair;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -24,24 +24,29 @@ public class SimpleKafkaProducer {
         if (args.length < 1) {
             throw new IllegalStateException("Kafka topic name must be set");
         }
-
         String topicName = args[0];
 
-        if (args.length > 1) {
-            parallelCount = Integer.parseInt(args[1]);
+        if (args.length < 2) {
+            throw new IllegalStateException("Kafka bootstrap server must be set");
         }
+        String server = args[1];
+
+        if (args.length > 2) {
+            parallelCount = Integer.parseInt(args[2]);
+        }
+
+        String preferLevel = args.length > 3 ? args[3] : null;
 
         ExecutorService executor = Executors.newFixedThreadPool(parallelCount);
         for (int i = 0; i < parallelCount; i++) {
-            executor.execute(() -> ProduceToKafka(topicName));
+            executor.execute(() -> ProduceToKafka(server, topicName, preferLevel));
         }
-        //ProduceToKafka(topicName);
     }
 
-    private static void ProduceToKafka(String topicName) {
-        try (Producer<String, LogMessage> producer = ProducerFactory.create(StringSerializer.class, JsonSerializer.class)) {
+    private static void ProduceToKafka(String server, String topicName, String preferLevel) {
+        try (Producer<String, LogMessage> producer = KafkaClientUtils.createProducer(server, StringSerializer.class, JsonSerializer.class)) {
             while (true) {
-                Pair<String, LogMessage> record = MessageGenerator.generate(RANDOMIZER.nextInt(9) + 1);
+                Pair<String, LogMessage> record = MessageGenerator.generate(RANDOMIZER.nextInt(9) + 1, preferLevel);
                 Future<RecordMetadata> response = producer.send(new ProducerRecord<>(
                         topicName,
                         record.getKey(),
