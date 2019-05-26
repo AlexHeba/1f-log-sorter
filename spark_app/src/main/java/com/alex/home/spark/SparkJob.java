@@ -28,19 +28,14 @@ import static org.apache.spark.sql.expressions.javalang.typed.count;
 
 public class SparkJob {
     public static void main(String[] args) throws InterruptedException {
-        String sparkMasterUrl = "spark://alex-vb:7077";
-        String kafkaBrokerServer = "localhost:9092";
-        Duration slideDuration = Durations.seconds(10);
-        Duration windowDuration = Durations.seconds(60);
-        String inputKafkaTopic = "input2";
-        String outputKafkaTopic = "output";
-        String alertsKafkaTopic = "alerts3";
-        Double alertErrorRateTreshold = 1.0;
-
-//        sparkMasterUrl = System.getenv("SPARK_MASTER_URL");
-//        if(sparkMasterUrl == null) {
-//            throw new IllegalStateException("SPARK_MASTER_URL environment variable must be set.");
-//        }
+        String sparkMasterUrl = getEnv("SPARK_MASTER_URL", "spark://alex-vb:7077");
+        String kafkaBrokerServer = getEnv("KAFKA_BROKER_SERVER", "localhost:9092");
+        String inputKafkaTopic = getEnv("INPUT_KAFKA_TOPIC", "input2");
+        String outputKafkaTopic = getEnv("OUT_KAFKA_TOPIC", "output");
+        String alertsKafkaTopic = getEnv("ALERT_KAFKA_TOPIC", "alerts3");
+        Duration windowDuration = Durations.seconds(getIntEnv("WINDOW_DURATION_SEC", 60));
+        Duration slideDuration = Durations.seconds(getIntEnv("SLIDE_DURATION_SEC", 10));
+        Double alertErrorRateTreshold = getDoubleEnv("ALERT_ERROR_RATE_THERSHOLD", 1.0);
 
         SparkConf sparkConf = new SparkConf().setAppName("alex-spark").setMaster(sparkMasterUrl);
         JavaStreamingContext streamingContext = new JavaStreamingContext(sparkConf, slideDuration);
@@ -49,13 +44,6 @@ public class SparkJob {
                 kafkaBrokerServer,
                 StringDeserializer.class,
                 JsonDeserializer.class);
-//        kafkaParams.put("bootstrap.servers", "localhost:9092");
-//        kafkaParams.put("key.deserializer", StringDeserializer.class);
-//        kafkaParams.put("value.deserializer", JsonDeserializer.class);
-//        kafkaParams.put("group.id", "use_a_separate_group_id_for_each_stream");
-//        kafkaParams.put("auto.offset.reset", "latest");
-//        kafkaParams.put("enable.auto.commit", false);
-//        kafkaParams.put(JsonDeserializer.TRUSTED_PACKAGES, "com.alex.home");
 
         Collection<String> topics = Arrays.asList(inputKafkaTopic);
 
@@ -129,5 +117,20 @@ public class SparkJob {
         streamingContext.start();
         streamingContext.awaitTermination();
         spark.stop();
+    }
+
+    private static String getEnv(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null ? defaultValue : value;
+    }
+
+    private static int getIntEnv(String name, int defaultValue) {
+        String value = System.getenv(name);
+        return value == null ? defaultValue : Integer.parseInt(value);
+    }
+
+    private static double getDoubleEnv(String name, double defaultValue) {
+        String value = System.getenv(name);
+        return value == null ? defaultValue : Double.parseDouble(value);
     }
 }

@@ -31,11 +31,11 @@ public class SimpleKafkaProducer {
         }
         String server = args[1];
 
-        if (args.length > 2) {
+        if (args.length > 2 && args[2] != null && args[2].length() > 0) {
             parallelCount = Integer.parseInt(args[2]);
         }
 
-        String preferLevel = args.length > 3 ? args[3] : null;
+        String preferLevel = args.length > 3 && args[3] != null && args[3].length() > 0 ? args[3] : null;
 
         ExecutorService executor = Executors.newFixedThreadPool(parallelCount);
         for (int i = 0; i < parallelCount; i++) {
