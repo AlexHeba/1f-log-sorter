@@ -18,7 +18,7 @@ public class MessageGenerator {
 
     public static Pair<String, LogMessage> generate(int count, String level) {
         List<LogMessageItem> items = new ArrayList<>(count);
-        Function<String, String> getLevel = level == null ? v -> getRandomHost() : v -> level;
+        Function<String, String> getLevel = level == null ? v -> getRandomLevel() : v -> level;
         for (int i = 0; i < count; i++) {
             items.add(new LogMessageItem(
                     getRandomHost(),
