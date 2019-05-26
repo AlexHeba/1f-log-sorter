@@ -2,6 +2,7 @@ package com.alex.home.kafka;
 
 import com.alex.home.LogMessage;
 import com.alex.home.KafkaClientUtils;
+import com.alex.home.MessageGenerator;
 import javafx.util.Pair;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;

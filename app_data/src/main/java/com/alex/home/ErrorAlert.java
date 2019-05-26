@@ -1,6 +1,8 @@
 package com.alex.home;
 
-public class ErrorAlert {
+import java.io.Serializable;
+
+public class ErrorAlert implements Serializable {
     private String host;
     private Double error_rate;
 

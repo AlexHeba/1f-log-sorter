@@ -16,7 +16,7 @@ public class StreamProcessor {
     public static JavaDStream<ErrorAlert> aggregateErrorLogs(
             JavaDStream<LogMessageItem> stream, long windowDuration, double alerThreshold) {
         return stream
-                .filter(n -> n.getHost() == LogLevel.ERROR)
+                .filter(n -> LogLevel.ERROR.equals(n.getLevel()))
                 .mapToPair(n -> new Tuple2<>(n.getHost(), 1))
                 .reduceByKey((agg, cur) -> agg + cur)
                 .map(n -> new ErrorAlert(n._1, n._2 * 1000.0 / windowDuration))

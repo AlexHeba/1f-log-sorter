@@ -1,4 +1,4 @@
-package com.alex.home.kafka;
+package com.alex.home;
 
 import com.alex.home.Hosts;
 import com.alex.home.LogLevel;
