@@ -1,4 +1,4 @@
-SPARK_WORK_FOLDER="/home/alex/Applications/spark-2.4.3-bin-hadoop2.7"
+SPARK_WORK_FOLDER="spark-2.4.3-bin-hadoop2.7"
 MY_SPARK_JAR="./spark_app/target/spark_app-1.0.jar"
 MY_SPARK_CLASS="com.alex.home.spark.SparkJob"
 
